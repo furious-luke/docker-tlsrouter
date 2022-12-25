@@ -41,6 +41,11 @@ docker run \
   furiousluke/tlsrouter
 ```
 
+## Usage
+
+When launched, a configuration file is read from S3 from
+`s3://$BUCKET/$STORAGE_PREFIX/tlsrouter.conf`.
+
 ## Acknowledgements
 
 The heavy lifting of performing TLS routing is handled by `tlsrouter`, which
