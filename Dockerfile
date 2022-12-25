@@ -1,20 +1,22 @@
 FROM alpine:latest AS mirror
 
 RUN apk add --no-cache --initdb \
-        git \
-        go \
-        musl-dev \
-        linux-headers \
+        git                     \
+        go                      \
+        musl-dev                \
+    		linux-headers           \
+        upx                     \
     && true
 ENV GOPATH=/go PATH=$PATH:/go/bin GOOS=linux
 
-RUN git clone https://github.com/inetaf/tcpproxy /go/src/tcpproxy
-WORKDIR /go/src/tcpproxy
-RUN go build ./cmd/tlsrouter
-RUN go install ./cmd/tlsrouter
+COPY tlsrouter /go/src/tlsrouter
+WORKDIR /go/src/tlsrouter
+RUN    go build -ldflags="-s -w" \
+    && go install                \
+    && upx /go/bin/tlsrouter
 
-RUN mkdir -p /out/usr/bin /out/etc/tlsrouter
-RUN cp /go/bin/tlsrouter /out/usr/bin/
+RUN    mkdir -p /out/usr/bin /out/etc/tlsrouter \
+    && cp /go/bin/tlsrouter /out/usr/bin/
 COPY entrypoint.sh /out/usr/bin/
 
 FROM alpine:latest
